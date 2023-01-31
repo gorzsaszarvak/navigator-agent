@@ -8,22 +8,54 @@ using Unity.MLAgents.Policies;
 
 public class PlayerAgent : Agent
 {
-    private float moveSpeed = 10f;
+    [Range(0f, 20f)]
+    public float moveSpeed = 10f;
 
+    [Range(10, 100)]
+    public int environmentSize = 10;
+
+    [SerializeField]
+    public GoalHandler goalHandler = null;
+    [SerializeField]
+    public ObstacleHandler obstacleHandler = null;
+
+    [Range(1, 10)]
+    public int numberOfGoals = 5;
+    [Range(1, 10)]
+    public int numberOfObstacles = 5;
+
+    [Range(1, 200)]
+    public int episodesBeforeReset = 100;
     private int episodes = 0;
+
+
+
 
     public override void Initialize()
     {
         base.Initialize();
+        goalHandler.InstantiateGoals(numberOfGoals, environmentSize);
+        obstacleHandler.InstantiateObstacles(numberOfObstacles, environmentSize);
+
+        goalHandler.RandomizeGoalPositions();
+        obstacleHandler.RandomizeObstaclePositions();
     }
 
     public override void OnEpisodeBegin()
     {
+
         Debug.Log("New episode");
 
         episodes++;
+        if(episodes == episodesBeforeReset)
+        {
+            goalHandler.RandomizeGoalPositions();
+            obstacleHandler.RandomizeObstaclePositions();
+            episodes= 0;
+        }
 
         transform.localPosition = new Vector3(0f, 2f, 0f);
+        
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -33,7 +65,6 @@ public class PlayerAgent : Agent
 
     public override void OnActionReceived(ActionBuffers actions)
     {
-        Debug.Log("Action received");
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
 
@@ -50,5 +81,20 @@ public class PlayerAgent : Agent
 
         Debug.Log("horizontal: " + continuousActions[0] + " vertical: " + continuousActions[1]);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Obstacle"))
+        {
+            AddReward(-100f);
+            EndEpisode();
+        } else if(other.gameObject.CompareTag("Goal"))
+        {
+            AddReward(10f);
+            goalHandler.ResetGoal(other.transform);
+        }
+    }
+
+
 
 }
