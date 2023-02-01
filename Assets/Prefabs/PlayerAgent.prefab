@@ -134,10 +134,13 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 10000
-  goalHandler: {fileID: 1284197572353358936, guid: 5388c7e583105ea45a2580dee10b03ee, type: 3}
-  obstacleHandler: {fileID: 1949052823999234038, guid: 36947be63ad6e274eb6595f24d522a96, type: 3}
   moveSpeed: 10
   environmentSize: 10
+  noSpawnAreaSize: 5
+  goalHandler: {fileID: 1284197572353358936, guid: 5388c7e583105ea45a2580dee10b03ee, type: 3}
+  obstacleHandler: {fileID: 1949052823999234038, guid: 36947be63ad6e274eb6595f24d522a96, type: 3}
+  numberOfGoals: 5
+  numberOfObstacles: 5
   episodesBeforeReset: 100
 --- !u!114 &2426195766867609082
 MonoBehaviour:
@@ -164,7 +167,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: My Behavior
+  m_BehaviorName: AgentBehavior
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1

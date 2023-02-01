@@ -5,6 +5,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
+using System;
 
 public class PlayerAgent : Agent
 {
@@ -13,6 +14,8 @@ public class PlayerAgent : Agent
 
     [Range(10, 100)]
     public int environmentSize = 10;
+    [Range(2, 10)]
+    public int noSpawnAreaSize = 5;
 
     [SerializeField]
     public GoalHandler goalHandler = null;
@@ -28,14 +31,11 @@ public class PlayerAgent : Agent
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
-
-
-
     public override void Initialize()
     {
         base.Initialize();
-        goalHandler.InstantiateGoals(numberOfGoals, environmentSize);
-        obstacleHandler.InstantiateObstacles(numberOfObstacles, environmentSize);
+        goalHandler.InstantiateGoals(numberOfGoals, environmentSize, transform.parent);
+        obstacleHandler.InstantiateObstacles(numberOfObstacles, environmentSize, noSpawnAreaSize, transform.parent);
 
         goalHandler.RandomizeGoalPositions();
         obstacleHandler.RandomizeObstaclePositions();
@@ -43,17 +43,15 @@ public class PlayerAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-
-        Debug.Log("New episode");
-
+        Debug.Log("New episode in " + transform.parent.ToString());
         episodes++;
         if(episodes == episodesBeforeReset)
         {
-            goalHandler.RandomizeGoalPositions();
             obstacleHandler.RandomizeObstaclePositions();
             episodes= 0;
         }
 
+        goalHandler.RandomizeGoalPositions();
         transform.localPosition = new Vector3(0f, 2f, 0f);
         
     }
@@ -71,6 +69,13 @@ public class PlayerAgent : Agent
         var movementVector = new Vector3(moveX, 0f, moveZ);
 
         transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
+
+        if(Math.Abs(transform.localPosition.x) > environmentSize / 2 
+            || Math.Abs(transform.localPosition.z) > environmentSize / 2)
+        {
+            AddReward(-100f);
+            EndEpisode();
+        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -78,8 +83,6 @@ public class PlayerAgent : Agent
         ActionSegment<float> continuousActions = actionsOut.ContinuousActions;
         continuousActions[0] = Input.GetAxisRaw("Horizontal");
         continuousActions[1] = Input.GetAxisRaw("Vertical");
-
-        Debug.Log("horizontal: " + continuousActions[0] + " vertical: " + continuousActions[1]);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -94,7 +97,4 @@ public class PlayerAgent : Agent
             goalHandler.ResetGoal(other.transform);
         }
     }
-
-
-
 }
