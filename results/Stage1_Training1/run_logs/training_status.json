@@ -1,0 +1,56 @@
+{
+    "AgentBehavior": {
+        "checkpoints": [
+            {
+                "steps": 499954,
+                "file_path": "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-499954.onnx",
+                "reward": 60.0,
+                "creation_time": 1675527842.2097085,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-499954.pt"
+                ]
+            },
+            {
+                "steps": 999884,
+                "file_path": "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-999884.onnx",
+                "reward": 66.42857142857143,
+                "creation_time": 1675528202.6450727,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-999884.pt"
+                ]
+            },
+            {
+                "steps": 1499900,
+                "file_path": "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-1499900.onnx",
+                "reward": 69.16666666666667,
+                "creation_time": 1675528563.332734,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-1499900.pt"
+                ]
+            },
+            {
+                "steps": 1636768,
+                "file_path": "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-1636768.onnx",
+                "reward": 68.88888888888889,
+                "creation_time": 1675528670.1548052,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-1636768.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1636768,
+            "file_path": "results\\Stage1_Training1\\AgentBehavior.onnx",
+            "reward": 68.88888888888889,
+            "creation_time": 1675528670.1548052,
+            "auxillary_file_paths": [
+                "results\\Stage1_Training1\\AgentBehavior\\AgentBehavior-1636768.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.28.0",
+        "torch_version": "1.7.1+cu110"
+    }
+}

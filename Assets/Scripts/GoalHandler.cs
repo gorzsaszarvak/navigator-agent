@@ -12,12 +12,12 @@ public class GoalHandler : MonoBehaviour
 
     private int environmentSize;
 
-    public void InstantiateGoals(int numberOfGoals, int environmentSize, Transform parent)
+    public void InstantiateGoals(int numberOfGoals, int environmentSize)
     {
         goals = new List<Transform>();
         for (int i = 0; i < numberOfGoals; i++)
         {
-            var goal = Instantiate(goalPrefab, parent);
+            var goal = Instantiate(goalPrefab, transform.parent);
             goals.Add(goal);
         }
         this.environmentSize= --environmentSize;

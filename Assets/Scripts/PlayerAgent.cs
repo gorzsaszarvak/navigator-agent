@@ -15,43 +15,46 @@ public class PlayerAgent : Agent
     [Range(10, 100)]
     public int environmentSize = 10;
     [Range(2, 10)]
-    public int noSpawnAreaSize = 5;
+    public int obstacleFreeRadius = 3;
 
     [SerializeField]
-    public GoalHandler goalHandler = null;
-    [SerializeField]
-    public ObstacleHandler obstacleHandler = null;
+    public EnvironmentHandler environmentHandler;
 
     [Range(1, 10)]
-    public int numberOfGoals = 5;
+    public int targetCount = 5;
     [Range(1, 10)]
-    public int numberOfObstacles = 5;
+    public int obstacleCount = 5;
+    [Range(1, 10)]
+    public int minObstacleDistance = 5;
 
     [Range(1, 200)]
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
+    private int collectedTargets = 0;
+
     public override void Initialize()
     {
         base.Initialize();
-        goalHandler.InstantiateGoals(numberOfGoals, environmentSize, transform.parent);
-        obstacleHandler.InstantiateObstacles(numberOfObstacles, environmentSize, noSpawnAreaSize, transform.parent);
 
-        goalHandler.RandomizeGoalPositions();
-        obstacleHandler.RandomizeObstaclePositions();
+        environmentHandler = Instantiate(environmentHandler, transform.parent);
+
+        environmentHandler.InstantiateEnvironment(environmentSize, targetCount, obstacleCount, obstacleFreeRadius, minObstacleDistance);
+
+        environmentHandler.GenerateEnvironment();
     }
 
     public override void OnEpisodeBegin()
     {
         Debug.Log("New episode in " + transform.parent.ToString());
         episodes++;
-        if(episodes == episodesBeforeReset)
-        {
-            obstacleHandler.RandomizeObstaclePositions();
-            episodes= 0;
-        }
 
-        goalHandler.RandomizeGoalPositions();
+        if(episodes  == 0)
+        {
+            environmentHandler.GenerateEnvironment();
+        }
+        environmentHandler.GenerateTargets();
+
         transform.localPosition = new Vector3(0f, 2f, 0f);
         
     }
@@ -59,6 +62,7 @@ public class PlayerAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
+        sensor.AddObservation(targetCount);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
@@ -69,13 +73,6 @@ public class PlayerAgent : Agent
         var movementVector = new Vector3(moveX, 0f, moveZ);
 
         transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
-
-        if(Math.Abs(transform.localPosition.x) > environmentSize / 2 
-            || Math.Abs(transform.localPosition.z) > environmentSize / 2)
-        {
-            AddReward(-100f);
-            EndEpisode();
-        }
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -94,7 +91,14 @@ public class PlayerAgent : Agent
         } else if(other.gameObject.CompareTag("Goal"))
         {
             AddReward(10f);
-            goalHandler.ResetGoal(other.transform);
+            collectedTargets++;
+            if(collectedTargets == targetCount)
+            {
+                AddReward(100f);
+                EndEpisode();
+            }
+
+            environmentHandler.ResetTarget(other.transform);
         }
     }
 }

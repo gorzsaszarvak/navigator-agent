@@ -10,22 +10,25 @@ public class ObstacleHandler : MonoBehaviour
 
     private List<Transform> obstacles;
 
-    private float environmentSize;
+    private int environmentSize;
 
-    private float noSpawnAreaSize;
+    private int noSpawnAreaSize;
 
-    public void InstantiateObstacles(int numberOfObstacles, int environmentSize, int noSpawnAreaSize, Transform parent)
+    private int minObstacleDistance;
+
+    public void InstantiateObstacles(int numberOfObstacles, int environmentSize, int noSpawnAreaSize, int minDistanceBetweenObstacles)
     {
         obstacles = new List<Transform>(numberOfObstacles);
 
         for (int i = 0; i < numberOfObstacles; i++)
         {
-            var obstacle = Instantiate(obstaclePrefab, parent);
+            var obstacle = Instantiate(obstaclePrefab, transform.parent);
             obstacles.Add(obstacle);
         }
 
-        this.environmentSize = (float)--environmentSize;
-        this.noSpawnAreaSize = (float)noSpawnAreaSize;
+        this.environmentSize = environmentSize-3;
+        this.noSpawnAreaSize = noSpawnAreaSize;
+        this.minObstacleDistance = minDistanceBetweenObstacles;
     }
 
     public void RandomizeObstaclePositions()
@@ -33,41 +36,54 @@ public class ObstacleHandler : MonoBehaviour
         foreach (var obstacle in obstacles)
         {
             RandomObstaclePosition(obstacle);
-            RandomRotation(obstacle);
         }
     }
 
     private void RandomObstaclePosition(Transform obstacle)
     {
-        float randomX = RandomNumberSkippingRange(
-            -(environmentSize / 2), 
-            environmentSize / 2, 
-            -noSpawnAreaSize, 
-            noSpawnAreaSize);
-        float randomZ = RandomNumberSkippingRange(
-            -(environmentSize / 2), 
-            environmentSize / 2, 
-            -noSpawnAreaSize, 
-            noSpawnAreaSize);
+        float randomX;
+        float randomZ;
+        Vector3 newPosition;
 
-        obstacle.localPosition = new Vector3(randomX, 2f, randomZ);
+        do {
+            randomX = RandomNumberSkippingRange(
+                -(environmentSize / 2),
+                environmentSize / 2,
+                -noSpawnAreaSize,
+                noSpawnAreaSize);
+            randomZ = RandomNumberSkippingRange(
+                -(environmentSize / 2),
+                environmentSize / 2,
+                -noSpawnAreaSize,
+                noSpawnAreaSize);
+            newPosition = new Vector3(randomX, 2f, randomZ);
+        } while(TooCloseToObstacles(newPosition));
+
+        obstacle.localPosition = newPosition;
     }
 
-    private void RandomRotation(Transform obstacle)
+    private int RandomNumberSkippingRange(int min, int max, int skipMin, int skipMax)
     {
-        float randomAngle = Random.Range(0f, 360f);
-        obstacle.eulerAngles = new Vector3(obstacle.eulerAngles.x, randomAngle, obstacle.eulerAngles.z);
-    }
-
-    private float RandomNumberSkippingRange(float min, float max, float skipMin, float skipMax)
-    {
-        float number;
+        int randomNumber;
 
         do
         {
-            number = Random.Range(min, max);
-        } while (number >= skipMin && number <= skipMax);
+            randomNumber = Random.Range(min, max);
+        } while (randomNumber >= skipMin && randomNumber <= skipMax);
 
-        return number;
+        return randomNumber;
+    }
+
+    private bool TooCloseToObstacles(Vector3 newPosition)
+    {
+        foreach (Transform otherObstacle in obstacles)
+        {
+            if (Vector3.Distance(newPosition, otherObstacle.localPosition) < minObstacleDistance)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

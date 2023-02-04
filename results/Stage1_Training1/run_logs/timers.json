@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1675528854",
+        "python_version": "3.7.16 (default, Jan 17 2023, 16:06:28) [MSC v.1916 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\gorzs\\anaconda3\\envs\\unity\\Scripts\\mlagents-learn .\\config.yaml --run-id=Stage1_Training1 --resume",
+        "mlagents_version": "0.28.0",
+        "mlagents_envs_version": "0.28.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.7.1+cu110",
+        "numpy_version": "1.21.6",
+        "end_time_seconds": "1675528862"
+    },
+    "total": 8.2895581,
+    "count": 1,
+    "self": 0.006237400000001614,
+    "children": {
+        "run_training.setup": {
+            "total": 0.06474829999999998,
+            "count": 1,
+            "self": 0.06474829999999998
+        },
+        "TrainerController.start_learning": {
+            "total": 8.2185724,
+            "count": 1,
+            "self": 0.00026959999999931483,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 8.218290099999999,
+                    "count": 1,
+                    "self": 8.218290099999999
+                },
+                "trainer_threads": {
+                    "total": 1.1000000004202093e-06,
+                    "count": 1,
+                    "self": 1.1000000004202093e-06
+                },
+                "TrainerController._save_models": {
+                    "total": 1.160000000055561e-05,
+                    "count": 1,
+                    "self": 1.160000000055561e-05
+                }
+            }
+        }
+    }
+}
