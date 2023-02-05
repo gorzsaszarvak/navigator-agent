@@ -9,31 +9,25 @@ public class EnvironmentHandler : MonoBehaviour
     [SerializeField]
     private Transform obstaclePrefab;
 
+    private List<Transform> obstacles;
+    private List<Vector3> obstaclePositions;
+
     [SerializeField]
     private Transform targetPrefab;
 
-    private List<Transform> obstacles;
-    private List<Transform> targets;
-
-    private List<Vector3> obstaclePositions;
-    private List<Vector3> targetPositions;
+    private Transform target;
+    public Vector3 targetPosition;
 
     private int environmentSize;
     private int obstacleCount;
-    private int targetCount;
-    private int obstacleFreeRadius;
+    private int noSpawnRadius;
     private int minObstacleDistance;
 
+    private Vector3 center = new Vector3(0f, 2f, 0f);
 
-    public void InstantiateEnvironment(int environmentSize, int targetCount, int obstacleCount, int obstacleFreeRadius, int minObstacleDistance)
+    public void InstantiateEnvironment(int environmentSize, int obstacleCount, int noSpawnRadius, int minObstacleDistance)
     {
-        targets = new List<Transform>(targetCount);
-        for(int i = 0; i < targetCount; i++)
-        {
-            var target = Instantiate(targetPrefab, transform.parent);
-            targets.Add(target);
-        }
-        targetPositions= new List<Vector3>(targetCount);
+        target = Instantiate(targetPrefab, transform.parent);
 
         obstacles = new List<Transform>(obstacleCount);
         for (int i = 0; i < obstacleCount; i++)
@@ -45,18 +39,16 @@ public class EnvironmentHandler : MonoBehaviour
 
         this.environmentSize= environmentSize;
         this.obstacleCount= obstacleCount;
-        this.targetCount= targetCount;
-        this.obstacleFreeRadius= obstacleFreeRadius;
+        this.noSpawnRadius= noSpawnRadius;
         this.minObstacleDistance= minObstacleDistance;
     }
 
     public void GenerateEnvironment()
     {
-
         GenerateObstaclePositions();
         for(int i = 0; i < obstacleCount; i++)
         {
-            if (Vector3.Distance(obstaclePositions[i], new Vector3(0f, 2f, 0f)) >= obstacleFreeRadius 
+            if (Vector3.Distance(obstaclePositions[i], new Vector3(0f, 2f, 0f)) >= noSpawnRadius 
                 || Mathf.Abs(obstaclePositions[i].x) > environmentSize / 2
                 || Mathf.Abs(obstaclePositions[i].z) > environmentSize / 2)
             {
@@ -68,21 +60,12 @@ public class EnvironmentHandler : MonoBehaviour
             }
         }
 
-        GenerateTargets();
+        GenerateTarget();
     }
 
-    public void GenerateTargets()
+    public void GenerateTarget()
     {
-        foreach (var target in targets)
-        {
-            target.gameObject.SetActive(true);
-            RandomTargetPosition(target);
-        }
-    }
-
-    public void ResetTarget(Transform target)
-    {
-        target.gameObject.SetActive(false);
+        RandomTargetPosition(target);
     }
 
     private void GenerateObstaclePositions()
@@ -123,9 +106,11 @@ public class EnvironmentHandler : MonoBehaviour
         do
         {
             randomTargetPosition = SingleRandomPosition(0, environmentSize/ 2);
-        } while(ObstacleTooClose(randomTargetPosition));
+        } while(ObstacleTooClose(randomTargetPosition)
+            || Vector3.Distance(center, randomTargetPosition) < noSpawnRadius);
 
         target.localPosition = randomTargetPosition;
+        targetPosition = randomTargetPosition;
     }
 
     private Vector3 SingleRandomPosition(float minDistance, float maxDistance)
@@ -135,7 +120,7 @@ public class EnvironmentHandler : MonoBehaviour
         randomDirection = randomDirection.normalized;
         float randomDistance = Random.Range(minDistance, maxDistance);
 
-        return new Vector3(0f, 2f, 0f) + randomDirection * randomDistance;
+        return center + randomDirection * randomDistance;
     }
 
     private bool ObstacleTooClose(Vector3 position)

@@ -15,13 +15,11 @@ public class PlayerAgent : Agent
     [Range(10, 100)]
     public int environmentSize = 10;
     [Range(2, 10)]
-    public int obstacleFreeRadius = 3;
+    public int noSpawnRadius = 3;
 
     [SerializeField]
     public EnvironmentHandler environmentHandler;
 
-    [Range(1, 10)]
-    public int targetCount = 5;
     [Range(1, 10)]
     public int obstacleCount = 5;
     [Range(1, 10)]
@@ -31,15 +29,13 @@ public class PlayerAgent : Agent
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
-    private int collectedTargets = 0;
-
     public override void Initialize()
     {
         base.Initialize();
 
         environmentHandler = Instantiate(environmentHandler, transform.parent);
 
-        environmentHandler.InstantiateEnvironment(environmentSize, targetCount, obstacleCount, obstacleFreeRadius, minObstacleDistance);
+        environmentHandler.InstantiateEnvironment(environmentSize, obstacleCount, noSpawnRadius, minObstacleDistance);
 
         environmentHandler.GenerateEnvironment();
     }
@@ -49,11 +45,11 @@ public class PlayerAgent : Agent
         Debug.Log("New episode in " + transform.parent.ToString());
         episodes++;
 
-        if(episodes  == 0)
+        if(episodes % episodesBeforeReset == 0)
         {
             environmentHandler.GenerateEnvironment();
         }
-        environmentHandler.GenerateTargets();
+        environmentHandler.GenerateTarget();
 
         transform.localPosition = new Vector3(0f, 2f, 0f);
         
@@ -62,17 +58,23 @@ public class PlayerAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(targetCount);
+        sensor.AddObservation(environmentHandler.targetPosition);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
-
         var movementVector = new Vector3(moveX, 0f, moveZ);
 
         transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
+
+        float distanceFromTarget = Vector3.Distance(transform.localPosition, environmentHandler.targetPosition);
+
+        float reward = -0.1f - 0.01f * distanceFromTarget / 2;
+        AddReward(reward);
+
+        Debug.Log(GetCumulativeReward());
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -90,15 +92,8 @@ public class PlayerAgent : Agent
             EndEpisode();
         } else if(other.gameObject.CompareTag("Goal"))
         {
-            AddReward(10f);
-            collectedTargets++;
-            if(collectedTargets == targetCount)
-            {
-                AddReward(100f);
-                EndEpisode();
-            }
-
-            environmentHandler.ResetTarget(other.transform);
+            AddReward(100f);
+            EndEpisode();
         }
     }
 }

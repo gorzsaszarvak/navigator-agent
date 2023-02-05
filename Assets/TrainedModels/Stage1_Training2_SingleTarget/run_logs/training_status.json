@@ -1,0 +1,47 @@
+{
+    "AgentBehavior": {
+        "checkpoints": [
+            {
+                "steps": 499893,
+                "file_path": "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-499893.onnx",
+                "reward": 17.430886056688095,
+                "creation_time": 1675616052.533678,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-499893.pt"
+                ]
+            },
+            {
+                "steps": 999987,
+                "file_path": "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-999987.onnx",
+                "reward": 81.63133280856866,
+                "creation_time": 1675616784.1238012,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-999987.pt"
+                ]
+            },
+            {
+                "steps": 1385788,
+                "file_path": "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-1385788.onnx",
+                "reward": 84.19086350648651,
+                "creation_time": 1675617544.268163,
+                "auxillary_file_paths": [
+                    "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-1385788.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 1385788,
+            "file_path": "results\\Stage1_Training2_SingleTarget\\AgentBehavior.onnx",
+            "reward": 84.19086350648651,
+            "creation_time": 1675617544.268163,
+            "auxillary_file_paths": [
+                "results\\Stage1_Training2_SingleTarget\\AgentBehavior\\AgentBehavior-1385788.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.28.0",
+        "torch_version": "1.7.1+cu110"
+    }
+}

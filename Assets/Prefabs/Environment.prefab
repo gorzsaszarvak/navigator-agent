@@ -28,8 +28,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4759818484040586527}
   - {fileID: 4759818484083794948}
+  - {fileID: 8492988977259700985}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -46,7 +46,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5153169691805610810, guid: 947922a48ae4338469a9e008e98546e7, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5153169691805610810, guid: 947922a48ae4338469a9e008e98546e7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -95,44 +95,20 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5153169691805610810, guid: 947922a48ae4338469a9e008e98546e7, type: 3}
   m_PrefabInstance: {fileID: 400249966729549630}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &4550007807551065449
+--- !u!1001 &646181013195160207
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 4759818484297581367}
     m_Modifications:
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: targetCount
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: obstacleCount
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: environmentSize
-      value: 50
-      objectReference: {fileID: 0}
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: environmentHandler
-      value: 
-      objectReference: {fileID: 1875490200564407576, guid: f75b17c3a81406c498e6c0868b53db29, type: 3}
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: obstacleFreeRadius
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 9019190868351104144, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-      propertyPath: minObstacleDistance
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 9019190868351104148, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
       propertyPath: m_Name
       value: PlayerAgent
       objectReference: {fileID: 0}
     - target: {fileID: 9019190868506450038, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9019190868506450038, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
       propertyPath: m_LocalPosition.x
@@ -176,8 +152,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
---- !u!4 &4759818484040586527 stripped
+--- !u!4 &8492988977259700985 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9019190868506450038, guid: c4f6299a9114e2643a56a9f57209ba74, type: 3}
-  m_PrefabInstance: {fileID: 4550007807551065449}
+  m_PrefabInstance: {fileID: 646181013195160207}
   m_PrefabAsset: {fileID: 0}
