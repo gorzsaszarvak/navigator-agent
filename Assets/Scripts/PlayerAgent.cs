@@ -73,8 +73,6 @@ public class PlayerAgent : Agent
 
         float reward = -0.1f - 0.01f * distanceFromTarget / 2;
         AddReward(reward);
-
-        Debug.Log(GetCumulativeReward());
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

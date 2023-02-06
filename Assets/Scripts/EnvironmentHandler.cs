@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,6 +12,8 @@ public class EnvironmentHandler : MonoBehaviour
 
     private List<Transform> obstacles;
     private List<Vector3> obstaclePositions;
+    private List<Tuple<int, int>> obstacleCoordinates;
+    private int obstacleSize;
 
     [SerializeField]
     private Transform targetPrefab;
@@ -36,7 +39,9 @@ public class EnvironmentHandler : MonoBehaviour
             obstacles.Add(obstacle);
         }
         obstaclePositions = new List<Vector3>(obstacleCount);
+        obstacleCoordinates= new List<Tuple<int, int>>(obstacleCount);
 
+        this.obstacleSize = (int)obstaclePrefab.transform.lossyScale.x;
         this.environmentSize= environmentSize;
         this.obstacleCount= obstacleCount;
         this.noSpawnRadius= noSpawnRadius;
@@ -71,32 +76,51 @@ public class EnvironmentHandler : MonoBehaviour
     private void GenerateObstaclePositions()
     {
         obstaclePositions.Clear();
-
-        int cells = Mathf.CeilToInt(Mathf.Sqrt(obstacleCount));
-        float cellSize = environmentSize / cells;
-
-        int x = 0;
-        int z = 0;
-        int dx = 0;
-        int dz = -1;
-
+        GenerateObstacleCoordinates();
         for (int i = 0; i < obstacleCount; i++)
         {
-            float randomX = x * cellSize + Random.Range(-cellSize / 2, cellSize / 2);
-            float randomZ = z * cellSize + Random.Range(-cellSize / 2, cellSize / 2);
+            float x = obstacleCoordinates[i].Item1;
+            float z = obstacleCoordinates[i].Item2;
 
-            obstaclePositions.Add(new Vector3(randomX, 2f, randomZ));
-
-            if ((x == z) || (x < 0 && x == -z) || (x > 0 && x == 1 - z))
-            {
-                int temp = dx;
-                dx = -dz;
-                dz = temp;
-            }
-
-            x += dx;
-            z += dz;
+            obstaclePositions.Add(new Vector3(x, 2f, z));
+            obstacles[i].localPosition = obstaclePositions[i];
         }
+
+    }
+
+    private void GenerateObstacleCoordinates()
+    {
+        obstacleCoordinates.Clear();
+
+        int cells = environmentSize / obstacleSize;
+
+        int minCoordinate = -cells / 2 + 1;
+        int maxCoordinate = cells / 2 - 1;
+
+        while (obstacleCoordinates.Count < obstacleCount)
+        {
+            int randomX = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
+            int randomZ = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
+            if (Math.Abs(randomX) >= noSpawnRadius && Math.Abs(randomZ) >= noSpawnRadius 
+                && IsValidCoordinate(randomX, randomZ))
+            {
+                obstacleCoordinates.Add(new Tuple<int, int>(randomX, randomZ));
+            }
+        }
+    }
+
+    private bool IsValidCoordinate(int x, int z)
+    {
+        foreach (var coordinate in obstacleCoordinates)
+        {
+            int xDiff = Math.Abs(coordinate.Item1 - x);
+            int zDiff = Math.Abs(coordinate.Item2 - z);
+            if (xDiff < minObstacleDistance && zDiff < minObstacleDistance)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void RandomTargetPosition(Transform target)
@@ -115,10 +139,10 @@ public class EnvironmentHandler : MonoBehaviour
 
     private Vector3 SingleRandomPosition(float minDistance, float maxDistance)
     {
-        Vector3 randomDirection = Random.onUnitSphere;
+        Vector3 randomDirection = UnityEngine.Random.onUnitSphere;
         randomDirection.y = 0;
         randomDirection = randomDirection.normalized;
-        float randomDistance = Random.Range(minDistance, maxDistance);
+        float randomDistance = UnityEngine.Random.Range(minDistance, maxDistance);
 
         return center + randomDirection * randomDistance;
     }
