@@ -135,11 +135,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 3000
   moveSpeed: 10
-  environmentSize: 50
-  noSpawnRadius: 3
   environmentHandler: {fileID: 7491758057343644091, guid: f75b17c3a81406c498e6c0868b53db29, type: 3}
-  obstacleCount: 9
-  minObstacleDistance: 5
   episodesBeforeReset: 50
 --- !u!114 &9019190868351104145
 MonoBehaviour:
@@ -199,8 +195,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - Goal
+  - Target
   - Obstacle
+  - Enemy
   m_RaysPerDirection: 6
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5

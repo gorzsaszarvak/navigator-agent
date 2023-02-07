@@ -12,18 +12,7 @@ public class PlayerAgent : Agent
     [Range(0f, 20f)]
     public float moveSpeed = 10f;
 
-    [Range(10, 100)]
-    public int environmentSize = 10;
-    [Range(2, 10)]
-    public int noSpawnRadius = 3;
-
-    [SerializeField]
     public EnvironmentHandler environmentHandler;
-
-    [Range(1, 10)]
-    public int obstacleCount = 5;
-    [Range(1, 10)]
-    public int minObstacleDistance = 5;
 
     [Range(1, 200)]
     public int episodesBeforeReset = 100;
@@ -35,7 +24,7 @@ public class PlayerAgent : Agent
 
         environmentHandler = Instantiate(environmentHandler, transform.parent);
 
-        environmentHandler.InstantiateEnvironment(environmentSize, obstacleCount, noSpawnRadius, minObstacleDistance);
+        environmentHandler.InstantiateEnvironment();
 
         environmentHandler.GenerateEnvironment();
     }
@@ -50,6 +39,7 @@ public class PlayerAgent : Agent
             environmentHandler.GenerateEnvironment();
         }
         environmentHandler.GenerateTarget();
+        environmentHandler.ResetEnemies();
 
         transform.localPosition = new Vector3(0f, 2f, 0f);
         
@@ -84,11 +74,11 @@ public class PlayerAgent : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Obstacle"))
+        if(other.gameObject.CompareTag("Obstacle") || other.gameObject.CompareTag("Enemy"))
         {
             AddReward(-100f);
             EndEpisode();
-        } else if(other.gameObject.CompareTag("Goal"))
+        } else if(other.gameObject.CompareTag("Target"))
         {
             AddReward(100f);
             EndEpisode();

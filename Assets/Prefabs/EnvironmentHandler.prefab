@@ -44,5 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3dc26bece5dad4498a1515995869300, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  obstacleCount: 9
+  enemyCount: 0
+  minObstacleDistance: 8
+  environmentSize: 50
+  noSpawnRadius: 5
   obstaclePrefab: {fileID: 1170506267716146226, guid: fb110fe6d91158c49a63cd7b079d2bac, type: 3}
   targetPrefab: {fileID: 537596165686397768, guid: e71f92d395bdb374085bfe0a9fd70dba, type: 3}
+  targetPosition: {x: 0, y: 0, z: 0}
+  enemyPrefab: {fileID: 1375187253601111682, guid: c6dd64dca128ff2448d7592f8e5b097d, type: 3}

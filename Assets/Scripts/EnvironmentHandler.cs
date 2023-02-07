@@ -7,9 +7,20 @@ using UnityEngine.UIElements;
 
 public class EnvironmentHandler : MonoBehaviour
 {
+    [Range(1, 10)]
+    public int obstacleCount = 9;
+    [Range(0, 5)]
+    public int enemyCount = 0;
+    [Range(1, 10)]
+    public int minObstacleDistance = 8;
+    [Range(50, 100)]
+    public int environmentSize = 50;
+    [Range(2, 10)]
+    public int noSpawnRadius = 5;
+
+
     [SerializeField]
     private Transform obstaclePrefab;
-
     private List<Transform> obstacles;
     private List<Vector3> obstaclePositions;
     private List<Tuple<int, int>> obstacleCoordinates;
@@ -17,60 +28,80 @@ public class EnvironmentHandler : MonoBehaviour
 
     [SerializeField]
     private Transform targetPrefab;
-
     private Transform target;
     public Vector3 targetPosition;
 
-    private int environmentSize;
-    private int obstacleCount;
-    private int noSpawnRadius;
-    private int minObstacleDistance;
+    [SerializeField]
+    private Transform enemyPrefab;
+    private List<Transform> enemies;
+    private List<Vector3> enemyPositions;
+    private int enemySize;
 
     private Vector3 center = new Vector3(0f, 2f, 0f);
 
-    public void InstantiateEnvironment(int environmentSize, int obstacleCount, int noSpawnRadius, int minObstacleDistance)
+    public void InstantiateEnvironment()
     {
-        target = Instantiate(targetPrefab, transform.parent);
+        this.target = Instantiate(targetPrefab, transform.parent);
 
-        obstacles = new List<Transform>(obstacleCount);
+        this.obstacles = new List<Transform>(obstacleCount);
         for (int i = 0; i < obstacleCount; i++)
         {
             var obstacle = Instantiate(obstaclePrefab, transform.parent);
             obstacles.Add(obstacle);
         }
-        obstaclePositions = new List<Vector3>(obstacleCount);
-        obstacleCoordinates= new List<Tuple<int, int>>(obstacleCount);
+        this.obstaclePositions = new List<Vector3>(obstacleCount);
+        this.obstacleCoordinates = new List<Tuple<int, int>>(obstacleCount);
+
+        this.enemies = new List<Transform>(enemyCount);
+        for (int i =0; i < enemyCount; i++)
+        {
+            var enemy = Instantiate(enemyPrefab, transform.parent);
+            enemies.Add(enemy);
+        }
+        this.enemyPositions = new List<Vector3>(enemyCount);
 
         this.obstacleSize = (int)obstaclePrefab.transform.lossyScale.x;
-        this.environmentSize= environmentSize;
-        this.obstacleCount= obstacleCount;
-        this.noSpawnRadius= noSpawnRadius;
-        this.minObstacleDistance= minObstacleDistance;
+        this.enemySize = (int)enemyPrefab.transform.lossyScale.x;
     }
 
     public void GenerateEnvironment()
     {
-        GenerateObstaclePositions();
-        for(int i = 0; i < obstacleCount; i++)
-        {
-            if (Vector3.Distance(obstaclePositions[i], new Vector3(0f, 2f, 0f)) >= noSpawnRadius 
-                || Mathf.Abs(obstaclePositions[i].x) > environmentSize / 2
-                || Mathf.Abs(obstaclePositions[i].z) > environmentSize / 2)
-            {
-                obstacles[i].localPosition = obstaclePositions[i];
-                obstacles[i].gameObject.SetActive(true);
-            } else
-            {
-                obstacles[i].gameObject.SetActive(false);
-            }
-        }
+        GenerateObstacles();
 
         GenerateTarget();
+
+        GenerateEnemies();
     }
 
     public void GenerateTarget()
     {
         RandomTargetPosition(target);
+    }
+
+    public void ResetEnemies()
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            enemies[i].localPosition = enemyPositions[i];
+        }
+    }
+
+    private void GenerateObstacles()
+    {
+        GenerateObstaclePositions();
+        for (int i = 0; i < obstacleCount; i++)
+        {
+            obstacles[i].localPosition = obstaclePositions[i];
+        }
+    }
+
+    private void GenerateEnemies()
+    {
+        GenerateEnemyPositions();
+        for (int i = 0; i < enemyCount; i++)
+        {
+            enemies[i].localPosition = enemyPositions[i];
+        }
     }
 
     private void GenerateObstaclePositions()
@@ -83,9 +114,35 @@ public class EnvironmentHandler : MonoBehaviour
             float z = obstacleCoordinates[i].Item2;
 
             obstaclePositions.Add(new Vector3(x, 2f, z));
-            obstacles[i].localPosition = obstaclePositions[i];
         }
+    }
 
+    private void GenerateEnemyPositions()
+    {
+        enemyPositions.Clear();
+        for (int i = 0; i < enemyCount; i++)
+        {
+            Vector3 randomPosition;
+            do
+            {
+                randomPosition = SingleRandomPosition(environmentSize / 3, environmentSize / 2 - enemySize);
+            } while (ObstacleTooClose(randomPosition) || TargetTooClose(randomPosition));
+
+            enemyPositions.Add(randomPosition);
+        }
+    }
+
+    private void RandomTargetPosition(Transform target)
+    {
+        Vector3 randomTargetPosition;
+
+        do
+        {
+            randomTargetPosition = SingleRandomPosition(noSpawnRadius, environmentSize/ 2);
+        } while(ObstacleTooClose(randomTargetPosition) || EnemyTooClose(randomTargetPosition));
+
+        target.localPosition = randomTargetPosition;
+        targetPosition = randomTargetPosition;
     }
 
     private void GenerateObstacleCoordinates()
@@ -101,7 +158,7 @@ public class EnvironmentHandler : MonoBehaviour
         {
             int randomX = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
             int randomZ = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
-            if (Math.Abs(randomX) >= noSpawnRadius && Math.Abs(randomZ) >= noSpawnRadius 
+            if ((Math.Abs(randomX) >= noSpawnRadius || Math.Abs(randomZ) >= noSpawnRadius)
                 && IsValidCoordinate(randomX, randomZ))
             {
                 obstacleCoordinates.Add(new Tuple<int, int>(randomX, randomZ));
@@ -121,20 +178,6 @@ public class EnvironmentHandler : MonoBehaviour
             }
         }
         return true;
-    }
-
-    private void RandomTargetPosition(Transform target)
-    {
-        Vector3 randomTargetPosition;
-
-        do
-        {
-            randomTargetPosition = SingleRandomPosition(0, environmentSize/ 2);
-        } while(ObstacleTooClose(randomTargetPosition)
-            || Vector3.Distance(center, randomTargetPosition) < noSpawnRadius);
-
-        target.localPosition = randomTargetPosition;
-        targetPosition = randomTargetPosition;
     }
 
     private Vector3 SingleRandomPosition(float minDistance, float maxDistance)
@@ -157,6 +200,27 @@ public class EnvironmentHandler : MonoBehaviour
             }
         }
 
+        return false;
+    }
+
+    private bool TargetTooClose(Vector3 position)
+    {
+        if(Vector3.Distance(position, targetPosition) < minObstacleDistance)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool EnemyTooClose(Vector3 position)
+    {
+        foreach(var enemyPosition in enemyPositions)
+        {
+            if(Vector3.Distance(position, enemyPosition) < minObstacleDistance)
+            {
+                return true;
+            }
+        }
         return false;
     }
 }

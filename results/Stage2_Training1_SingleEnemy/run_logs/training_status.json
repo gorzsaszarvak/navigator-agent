@@ -1,0 +1,65 @@
+{
+    "AgentBehavior": {
+        "checkpoints": [
+            {
+                "steps": 3499973,
+                "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-3499973.onnx",
+                "reward": -2.336828996648836,
+                "creation_time": 1675778443.8384197,
+                "auxillary_file_paths": [
+                    "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-3499973.pt"
+                ]
+            },
+            {
+                "steps": 3999988,
+                "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-3999988.onnx",
+                "reward": 1.7251350682809812,
+                "creation_time": 1675778845.2215245,
+                "auxillary_file_paths": [
+                    "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-3999988.pt"
+                ]
+            },
+            {
+                "steps": 4499989,
+                "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-4499989.onnx",
+                "reward": -16.121912136412504,
+                "creation_time": 1675779263.0808094,
+                "auxillary_file_paths": [
+                    "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-4499989.pt"
+                ]
+            },
+            {
+                "steps": 4999997,
+                "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-4999997.onnx",
+                "reward": 6.779962223518525,
+                "creation_time": 1675779668.9489932,
+                "auxillary_file_paths": [
+                    "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-4999997.pt"
+                ]
+            },
+            {
+                "steps": 5027874,
+                "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-5027874.onnx",
+                "reward": 14.587804785602168,
+                "creation_time": 1675779731.2735186,
+                "auxillary_file_paths": [
+                    "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-5027874.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 5027874,
+            "file_path": "results\\Stage2_Training1_SingleEnemy\\AgentBehavior.onnx",
+            "reward": 14.587804785602168,
+            "creation_time": 1675779731.2735186,
+            "auxillary_file_paths": [
+                "results\\Stage2_Training1_SingleEnemy\\AgentBehavior\\AgentBehavior-5027874.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.28.0",
+        "torch_version": "1.7.1+cu110"
+    }
+}
