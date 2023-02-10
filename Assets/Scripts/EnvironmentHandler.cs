@@ -9,6 +9,8 @@ public class EnvironmentHandler : MonoBehaviour
 {
     [Range(1, 10)]
     public int obstacleCount = 9;
+    [Range(1, 10)]
+    public int rotatingWallCount = 5;
     [Range(0, 5)]
     public int enemyCount = 0;
     [Range(1, 10)]
@@ -18,9 +20,13 @@ public class EnvironmentHandler : MonoBehaviour
     [Range(2, 10)]
     public int noSpawnRadius = 5;
 
+    [SerializeField]
+    private Transform playgroundPrefab;
 
     [SerializeField]
     private Transform obstaclePrefab;
+    [SerializeField]
+    private Transform rotatingWallPrefab;
     private List<Transform> obstacles;
     private List<Vector3> obstaclePositions;
     private List<Tuple<int, int>> obstacleCoordinates;
@@ -41,13 +47,22 @@ public class EnvironmentHandler : MonoBehaviour
 
     public void InstantiateEnvironment()
     {
+        Transform playground = Instantiate(playgroundPrefab, transform.parent);
+
+        playground.localScale = new Vector3(environmentSize / 10, 4f, environmentSize / 10);
+
         this.target = Instantiate(targetPrefab, transform.parent);
 
-        this.obstacles = new List<Transform>(obstacleCount);
+        this.obstacles = new List<Transform>(obstacleCount + rotatingWallCount);
         for (int i = 0; i < obstacleCount; i++)
         {
             var obstacle = Instantiate(obstaclePrefab, transform.parent);
             obstacles.Add(obstacle);
+        }
+        for (int i = 0; i < rotatingWallCount; i++)
+        {
+            var rotatingWall = Instantiate(rotatingWallPrefab, transform.parent);
+            obstacles.Add(rotatingWall);
         }
         this.obstaclePositions = new List<Vector3>(obstacleCount);
         this.obstacleCoordinates = new List<Tuple<int, int>>(obstacleCount);
@@ -89,7 +104,7 @@ public class EnvironmentHandler : MonoBehaviour
     private void GenerateObstacles()
     {
         GenerateObstaclePositions();
-        for (int i = 0; i < obstacleCount; i++)
+        for (int i = 0; i < obstaclePositions.Count; i++)
         {
             obstacles[i].localPosition = obstaclePositions[i];
         }
@@ -108,7 +123,7 @@ public class EnvironmentHandler : MonoBehaviour
     {
         obstaclePositions.Clear();
         GenerateObstacleCoordinates();
-        for (int i = 0; i < obstacleCount; i++)
+        for (int i = 0; i < obstacleCoordinates.Count; i++)
         {
             float x = obstacleCoordinates[i].Item1;
             float z = obstacleCoordinates[i].Item2;
@@ -151,10 +166,10 @@ public class EnvironmentHandler : MonoBehaviour
 
         int cells = environmentSize / obstacleSize;
 
-        int minCoordinate = -cells / 2 + 1;
-        int maxCoordinate = cells / 2 - 1;
+        int minCoordinate = -cells / 2 + 2;
+        int maxCoordinate = cells / 2 - 2;
 
-        while (obstacleCoordinates.Count < obstacleCount)
+        while (obstacleCoordinates.Count < obstacleCount + rotatingWallCount)
         {
             int randomX = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
             int randomZ = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
