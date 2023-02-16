@@ -11,6 +11,8 @@ public class EnvironmentHandler : MonoBehaviour
     public int obstacleCount = 9;
     [Range(1, 10)]
     public int rotatingWallCount = 5;
+    [Range(1, 10)]
+    public int gasCount = 2;
     [Range(0, 5)]
     public int enemyCount = 0;
     [Range(1, 10)]
@@ -23,14 +25,22 @@ public class EnvironmentHandler : MonoBehaviour
     [SerializeField]
     private Transform playgroundPrefab;
 
-    [SerializeField]
-    private Transform obstaclePrefab;
-    [SerializeField]
-    private Transform rotatingWallPrefab;
+
     private List<Transform> obstacles;
     private List<Vector3> obstaclePositions;
     private List<Tuple<int, int>> obstacleCoordinates;
     private int obstacleSize;
+
+    [SerializeField]
+    private Transform obstaclePrefab;
+    [SerializeField]
+    private Transform rotatingWallPrefab;
+    [SerializeField]
+    private Transform gasPrefab;
+    private List<Transform> gasTransforms;
+    private List<Coroutine> gasCoroutines;
+
+
 
     [SerializeField]
     private Transform targetPrefab;
@@ -53,7 +63,9 @@ public class EnvironmentHandler : MonoBehaviour
 
         this.target = Instantiate(targetPrefab, transform.parent);
 
-        this.obstacles = new List<Transform>(obstacleCount + rotatingWallCount);
+        this.obstacles = new List<Transform>(obstacleCount + rotatingWallCount + gasCount);
+        this.gasTransforms = new List<Transform>();
+        this.gasCoroutines = new List<Coroutine>();
         for (int i = 0; i < obstacleCount; i++)
         {
             var obstacle = Instantiate(obstaclePrefab, transform.parent);
@@ -64,8 +76,14 @@ public class EnvironmentHandler : MonoBehaviour
             var rotatingWall = Instantiate(rotatingWallPrefab, transform.parent);
             obstacles.Add(rotatingWall);
         }
-        this.obstaclePositions = new List<Vector3>(obstacleCount);
-        this.obstacleCoordinates = new List<Tuple<int, int>>(obstacleCount);
+        for (int i = 0;i < gasCount; i++)
+        {
+            var gas = Instantiate(gasPrefab, transform.parent);
+            obstacles.Add(gas);
+            gasTransforms.Add(gas);
+        }
+        this.obstaclePositions = new List<Vector3>();
+        this.obstacleCoordinates = new List<Tuple<int, int>>();
 
         this.enemies = new List<Transform>(enemyCount);
         for (int i =0; i < enemyCount; i++)
@@ -107,6 +125,14 @@ public class EnvironmentHandler : MonoBehaviour
         for (int i = 0; i < obstaclePositions.Count; i++)
         {
             obstacles[i].localPosition = obstaclePositions[i];
+        }
+
+        foreach (var coroutine in gasCoroutines) { StopCoroutine(coroutine); }
+        gasCoroutines.Clear();
+        foreach (var gas in gasTransforms) 
+        {
+            var runningCoroutine = StartCoroutine(DeactivateObjectCoroutine(gas));
+            gasCoroutines.Add(runningCoroutine);
         }
     }
 
@@ -169,7 +195,7 @@ public class EnvironmentHandler : MonoBehaviour
         int minCoordinate = -cells / 2 + 2;
         int maxCoordinate = cells / 2 - 2;
 
-        while (obstacleCoordinates.Count < obstacleCount + rotatingWallCount)
+        while (obstacleCoordinates.Count < obstacleCount + rotatingWallCount + gasCount)
         {
             int randomX = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
             int randomZ = UnityEngine.Random.Range(minCoordinate, maxCoordinate) * obstacleSize;
@@ -237,5 +263,26 @@ public class EnvironmentHandler : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private IEnumerator DeactivateObjectCoroutine(Transform gasTransform)
+    {
+
+        float activationInterval = UnityEngine.Random.Range(2f, 4f);
+        float deactivationInterval = UnityEngine.Random.Range(2f, 4f);
+
+        while (true)
+        {
+            if (gasTransform.gameObject.activeSelf)
+            {
+                yield return new WaitForSeconds(deactivationInterval);
+                gasTransform.gameObject.SetActive(false);
+            }
+            else
+            {
+                yield return new WaitForSeconds(activationInterval);
+                gasTransform.gameObject.SetActive(true);
+            }
+        }
     }
 }
