@@ -12,15 +12,19 @@ public class PlayerAgent : Agent
     [Range(0f, 20f)]
     public float moveSpeed = 10f;
 
+    private new Rigidbody rigidbody;
+
     public EnvironmentHandler environmentHandler;
 
     [Range(1, 200)]
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
+    // todo: public int health = 100;
+
     public override void Initialize()
     {
-        base.Initialize();
+        rigidbody= GetComponent<Rigidbody>();
 
         environmentHandler = Instantiate(environmentHandler, transform.parent);
 
@@ -41,23 +45,30 @@ public class PlayerAgent : Agent
         environmentHandler.GenerateTarget();
         environmentHandler.ResetEnemies();
 
+        rigidbody.velocity = Vector3.zero;
+        rigidbody.angularVelocity = Vector3.zero;
         transform.localPosition = new Vector3(0f, 2f, 0f);
-        
+
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
         sensor.AddObservation(environmentHandler.targetPosition);
+
+        sensor.AddObservation(rigidbody.velocity.x);
+        sensor.AddObservation(rigidbody.velocity.z);
     }
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         float moveX = actions.ContinuousActions[0];
         float moveZ = actions.ContinuousActions[1];
-        var movementVector = new Vector3(moveX, 0f, moveZ);
+        Vector3 direction = new Vector3(moveX, 0f, moveZ);
 
-        transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
+        rigidbody.AddForce(direction * moveSpeed);
+
+        //transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
 
         float distanceFromTarget = Vector3.Distance(transform.localPosition, environmentHandler.targetPosition);
 
