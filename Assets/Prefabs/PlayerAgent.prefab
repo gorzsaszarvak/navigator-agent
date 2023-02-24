@@ -138,6 +138,10 @@ MonoBehaviour:
   moveSpeed: 20
   environmentHandler: {fileID: 7491758057343644091, guid: f75b17c3a81406c498e6c0868b53db29, type: 3}
   episodesBeforeReset: 50
+  ui: {fileID: 2719246279368218282, guid: 53a44b46c9957c242a08b4401f4c724a, type: 3}
+  health: 100
+  collisionPenalty: 0.01
+  gasPenalty: 1
 --- !u!114 &9019190868351104145
 MonoBehaviour:
   m_ObjectHideFlags: 0

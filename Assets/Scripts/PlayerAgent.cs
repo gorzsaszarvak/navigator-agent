@@ -20,6 +20,14 @@ public class PlayerAgent : Agent
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
+    public HealthBar healthBar;
+    public float maxHealth = 100;
+    public float currentHealth;
+    public float collisionPenalty = 0.01f;
+    public float gasPenalty = 0.5f;
+
+
+
     public override void Initialize()
     {
         rigidbody= GetComponent<Rigidbody>();
@@ -29,6 +37,8 @@ public class PlayerAgent : Agent
         environmentHandler.InstantiateEnvironment();
 
         environmentHandler.GenerateEnvironment();
+
+        healthBar.SetMaxHealth(maxHealth);
     }
 
     public override void OnEpisodeBegin()
@@ -40,8 +50,14 @@ public class PlayerAgent : Agent
         {
             environmentHandler.GenerateEnvironment();
         }
+
+
+
         environmentHandler.GenerateTarget();
         environmentHandler.ResetEnemies();
+
+        currentHealth = maxHealth;
+        healthBar.SetHealth(maxHealth);
 
         rigidbody.velocity = Vector3.zero;
         rigidbody.angularVelocity = Vector3.zero;
@@ -70,6 +86,7 @@ public class PlayerAgent : Agent
 
         float distancePenalty = -0.1f - 0.01f * distanceFromTarget / 2;
         AddReward(distancePenalty);
+
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -83,14 +100,11 @@ public class PlayerAgent : Agent
     {
         if(other.gameObject.CompareTag("Enemy"))
         {
-            AddReward(-100f);
-            EndEpisode();
+            TakeDamage(maxHealth);
         } else if(other.gameObject.CompareTag("Obstacle"))
         {
-            AddReward(-5f);            
-        } else if(other.gameObject.CompareTag("Gas"))
-        {
-            AddReward(-5f);
+            float speed = rigidbody.velocity.magnitude;
+            TakeDamage(speed * collisionPenalty);
         } else if(other.gameObject.CompareTag("Target"))
         {
             AddReward(100f);
@@ -102,7 +116,19 @@ public class PlayerAgent : Agent
     {
         if(other.gameObject.CompareTag("Gas"))
         {
-            AddReward(-0.1f);
+            TakeDamage(gasPenalty);
+        }
+    }
+
+    private void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
+
+        if(currentHealth <= 0)
+        {
+            AddReward(-100f);
+            EndEpisode();
         }
     }
 }
