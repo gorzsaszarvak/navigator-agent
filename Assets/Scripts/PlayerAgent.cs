@@ -20,8 +20,6 @@ public class PlayerAgent : Agent
     public int episodesBeforeReset = 100;
     private int episodes = 0;
 
-    // todo: public int health = 100;
-
     public override void Initialize()
     {
         rigidbody= GetComponent<Rigidbody>();
@@ -68,12 +66,10 @@ public class PlayerAgent : Agent
 
         rigidbody.AddForce(direction * moveSpeed);
 
-        //transform.localPosition += movementVector * Time.deltaTime * moveSpeed;
-
         float distanceFromTarget = Vector3.Distance(transform.localPosition, environmentHandler.targetPosition);
 
-        float reward = -0.1f - 0.01f * distanceFromTarget / 2;
-        AddReward(reward);
+        float distancePenalty = -0.1f - 0.01f * distanceFromTarget / 2;
+        AddReward(distancePenalty);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -85,14 +81,28 @@ public class PlayerAgent : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Obstacle") || other.gameObject.CompareTag("Enemy"))
+        if(other.gameObject.CompareTag("Enemy"))
         {
             AddReward(-100f);
             EndEpisode();
+        } else if(other.gameObject.CompareTag("Obstacle"))
+        {
+            AddReward(-5f);            
+        } else if(other.gameObject.CompareTag("Gas"))
+        {
+            AddReward(-5f);
         } else if(other.gameObject.CompareTag("Target"))
         {
             AddReward(100f);
             EndEpisode();
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.gameObject.CompareTag("Gas"))
+        {
+            AddReward(-0.1f);
         }
     }
 }

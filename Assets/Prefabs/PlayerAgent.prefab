@@ -112,7 +112,7 @@ Rigidbody:
   m_GameObject: {fileID: 9019190868351104148}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -135,7 +135,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 3000
-  moveSpeed: 10
+  moveSpeed: 20
   environmentHandler: {fileID: 7491758057343644091, guid: f75b17c3a81406c498e6c0868b53db29, type: 3}
   episodesBeforeReset: 50
 --- !u!114 &9019190868351104145
