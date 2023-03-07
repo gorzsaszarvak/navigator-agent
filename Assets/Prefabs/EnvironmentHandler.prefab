@@ -45,13 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleCount: 10
-  rotatingWallCount: 5
-  gasCount: 2
+  rotatingWallCount: 1
+  gasCount: 1
   enemyCount: 0
   minObstacleDistance: 8
   environmentSize: 100
   noSpawnRadius: 5
   playgroundPrefab: {fileID: 1757381968928734843, guid: 0fb77708c6b79514d909b8fb2b52ed64, type: 3}
+  obstaclePositions: []
   obstaclePrefab: {fileID: 7845399541364554201, guid: fb110fe6d91158c49a63cd7b079d2bac, type: 3}
   rotatingWallPrefab: {fileID: 8970783869711112096, guid: de7d2ce3ae5e87e499c7028cff5f53da, type: 3}
   gasPrefab: {fileID: 6423105892416490794, guid: 90aa7ef95922d144d8cc4e35b2e406f9, type: 3}

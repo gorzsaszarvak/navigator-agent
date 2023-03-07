@@ -26,6 +26,12 @@ public class PlayerAgent : Agent
     public float collisionPenalty = 0.01f;
     public float gasPenalty = 0.5f;
 
+    public float viewDistance = 10f;
+
+    int undiscoveredObstacleCount;
+    List<Vector3> discoveredObstaclePositions;
+    List<Vector3> undiscoveredObstaclePositions;
+
 
 
     public override void Initialize()
@@ -33,12 +39,14 @@ public class PlayerAgent : Agent
         rigidbody= GetComponent<Rigidbody>();
 
         environmentHandler = Instantiate(environmentHandler, transform.parent);
-
         environmentHandler.InstantiateEnvironment();
-
         environmentHandler.GenerateEnvironment();
 
         healthBar.SetMaxHealth(maxHealth);
+
+        int obstacleCount = environmentHandler.obstacleCount;
+        undiscoveredObstacleCount= obstacleCount;
+        discoveredObstaclePositions= new List<Vector3>(obstacleCount);
     }
 
     public override void OnEpisodeBegin()
@@ -51,7 +59,7 @@ public class PlayerAgent : Agent
             environmentHandler.GenerateEnvironment();
         }
 
-
+        undiscoveredObstaclePositions = environmentHandler.obstaclePositions;
 
         environmentHandler.GenerateTarget();
         environmentHandler.ResetEnemies();
@@ -68,10 +76,26 @@ public class PlayerAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(environmentHandler.targetPosition);
 
         sensor.AddObservation(rigidbody.velocity.x);
         sensor.AddObservation(rigidbody.velocity.z);
+
+        sensor.AddObservation(currentHealth);
+
+        foreach(var obstaclePosition in undiscoveredObstaclePositions)
+        {
+            if(Vector3.Distance(transform.localPosition, obstaclePosition) <= viewDistance)
+            {
+                discoveredObstaclePositions.Add(obstaclePosition);
+                undiscoveredObstaclePositions.Remove(obstaclePosition);
+                undiscoveredObstacleCount--;
+            }
+        }
+        foreach(var obstaclePosition in discoveredObstaclePositions)
+        {
+            sensor.AddObservation(obstaclePosition);
+        }
+        sensor.AddObservation(undiscoveredObstacleCount);
     }
 
     public override void OnActionReceived(ActionBuffers actions)

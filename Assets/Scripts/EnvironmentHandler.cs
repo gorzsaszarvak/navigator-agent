@@ -27,7 +27,7 @@ public class EnvironmentHandler : MonoBehaviour
 
 
     private List<Transform> obstacles;
-    private List<Vector3> obstaclePositions;
+    public List<Vector3> obstaclePositions;
     private List<Tuple<int, int>> obstacleCoordinates;
     private int obstacleSize;
 
